@@ -24,8 +24,9 @@ $all_ids_cars_published = [];
 
 
 
-function create_all_cars_caller(){
-    
+function create_all_cars_caller()
+{
+
     /**
      * Create cars from the links API RAFFINE
      */
@@ -51,16 +52,15 @@ function create_all_cars_caller(){
     $url_of_all_cars = $url_of_the_core . $list_keys[3] . $locale_url_parameter;
     create_cars_all($url_of_all_cars);
 
-      //at the end delete the posts and show the count
-      $cnt = delete_the_posts();
-      echo "__post deleted: " . $cnt . "___";
-
+    //at the end delete the posts and show the count
+    $cnt = delete_the_posts();
+    echo "__post deleted: " . $cnt . "___";
 }
 
 
 
 /**
- * Basic fundamental function
+ * Basic fundamental function, create only one car used for updating
  * @param string $links_of_individual
  */
 function create_cars($links_of_individual = "", $link_of_thumb = "")
@@ -83,7 +83,8 @@ function create_cars($links_of_individual = "", $link_of_thumb = "")
 }
 
 /**
- * 
+ * Create all cars
+ * @param string $link of all cars
  */
 function create_cars_all($url_of_all_cars = "")
 {
@@ -98,13 +99,13 @@ function create_cars_all($url_of_all_cars = "")
 
     //initialization url + thumbs + is new?
     get_links_of_cars_and_thumbs($html);
-  
+
     foreach (array_keys($assoc_links_and_thumbs) as $link) {
         $url = trim(strval($link));
         $url = $url . $locale_url_parameter;
 
-       //echo $url;
-       //echo '<br>';
+        //echo $url;
+        //echo '<br>';
 
         $content01 = get_content($url);
         $content01 = json_decode($content01);
@@ -112,8 +113,6 @@ function create_cars_all($url_of_all_cars = "")
         $global_link = $url;
         create_new_car_posts($content01, $url);
     }
-
-  
 }
 
 /**
@@ -134,7 +133,7 @@ function create_new_car_posts($content01, $link, $single = "")
     array_push($all_ids, $post_title);
 
     if (post_exists($post_title)) {
-        
+
         // send to browser
         echo " already exists: ";
         echo $post_title;
@@ -148,7 +147,7 @@ function create_new_car_posts($content01, $link, $single = "")
         echo "<br>";
         update_post_acf($post_id);
         update_vozidla_post_meta($post_id);
-        
+
         return;
     } else {
         $post_information = array(
@@ -466,7 +465,6 @@ function update_post_acf($post_id, $content01_param = "", $link_param = "")
         'vybava' => $vybava,
     );
     insert_field_subfield('extra_vybava', 'extra-vybava-list', $addField, $addSubField, 'field_5f938248ceac7', $post_id);
-
 }
 
 
@@ -511,11 +509,11 @@ function upload_and_asign_images($post_id, $content01_param = "")
     require_once(ABSPATH . 'wp-admin/includes/image.php');
 
     //TODO: testing
-   // array_pop($final_array_photos);
-   // array_pop($final_array_photos);
-   // array_pop($final_array_photos);
-   // array_pop($final_array_photos);
-   // array_pop($final_array_photos);
+    // array_pop($final_array_photos);
+    // array_pop($final_array_photos);
+    // array_pop($final_array_photos);
+    // array_pop($final_array_photos);
+    // array_pop($final_array_photos);
 
     $attachments_urls = array();
     $attachements_urls_acf = array();

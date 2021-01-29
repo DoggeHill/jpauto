@@ -1,0 +1,15 @@
+#manual
+
+the main file I have developed is cars_json_function
+
+Basic funciton:
+
+1. From the json api listing of all cars get the individual car link a it's thumb
+2. If not posted create a new vozidlo CPT, otherwise just update acf and post meta
+3. There is action hook in functions 'On post created' calling update_post_acf, update_post_meta and
+upload_and_asign_images
+4. At the end the script will delete all all posts which are on the page but not in api
+
+---Back log---
+Update post media is missing... I do not know how to delete image, there is no such function in WP
+to find a media by description or so, I will have to probably create custom db query...
