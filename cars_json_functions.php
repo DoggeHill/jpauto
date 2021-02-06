@@ -19,7 +19,6 @@ $is_new = 0;
 $global_link = "";
 
 $assoc_links_and_thumbs = [];
-
 $all_ids_cars_published = [];
 
 
@@ -53,7 +52,7 @@ function create_all_cars_caller()
     create_cars_all($url_of_all_cars);
 
     //at the end delete the posts and show the count
-    $cnt = delete_the_posts();
+    $cnt = delete_the_posts(); 
     echo "__post deleted: " . $cnt . "___";
 }
 
@@ -129,7 +128,8 @@ function create_new_car_posts($content01, $link, $single = "")
     $url = trim($url);
     $url = str_replace('\n', '', $url);
 
-    $post_title = $content01->make . " " . $content01->version . " " . $content01->model . " " . $content01->id;
+    $post_title = $content01->make . " " . $content01->model . " " . $content01->version . " " . $content01->id;
+
     array_push($all_ids, $post_title);
 
     if (post_exists($post_title)) {
@@ -144,12 +144,22 @@ function create_new_car_posts($content01, $link, $single = "")
         $post_id = $post_with_id->ID;
         echo "id " . $post_id;
         echo "<br>";
-        echo "<br>";
+
+        $my_post = array(
+            'ID' => $post_id,
+            'post_title' => $post_title,
+        );
+        //Update the post into the database - title
+        wp_update_post($my_post);
+
+
         update_post_acf($post_id);
         update_vozidla_post_meta($post_id);
 
         return;
     } else {
+
+
         $post_information = array(
             'post_title' => $post_title,
             'post_type' => 'vozidla',
