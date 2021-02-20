@@ -317,9 +317,11 @@ function save_post_callback($post_id)
         update_post_acf($post_id);
 
         //upload images and save them in acf gallery
-        upload_and_asign_images($post_id);
+        //we will use the api to serve the images
+        //upload_and_asign_images($post_id);
 
     } else {
         // Updated post
+        return;
     }
 }

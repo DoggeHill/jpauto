@@ -1,8 +1,6 @@
-<?php header('Content-type: text/html; charset=utf-8'); ?>
 <?php
-
+header('Content-type: text/html; charset=utf-8');
 require_once 'cars_json_functions_json.php';
-
 
 //content of the individual car
 $content01 = new stdClass();
@@ -10,107 +8,48 @@ $content01 = new stdClass();
 //Array of all titles created during the post being publish used for the deletion
 $all_ids = array();
 
-//declaration links, thumbnails, new car, brand
-$is_new_car = 0;
-$is_jaguar = false;
-$is_new = 0;
+const UUID = [
+    'JR' => '13b297ed-eb96-4d1a-b0af-8539d7ff00ae',
+    'LR' => '13b297ed-eb96-4d1a-b0af-8539d7ff00ae',
+];
+const API_URL_HOME = 'https://api.carsinventory.com/public_api/listing/';
 
-//Link in ACF used for updates
-$global_link = "";
-
-$assoc_links_and_thumbs = [];
-$all_ids_cars_published = [];
-
-
-
-function create_all_cars_caller()
-{
-
-    /**
-     * Create cars from the links API RAFFINE
-     */
-    //API URLS
-    $url_of_the_core = "https://new.carsinventory.com/api2/";
-    $locale_url_parameter = "?locale=sk";
-    $list_keys = [
-        "d7306123447f4384e75fdcbe505100313a30de7b", //Jaguar new
-        "12160e69e3e995bdba72cba3957fd1c196682c6c", //LR new
-        "83c80d4be13bdfc01f29d8dcba7456f673102cf5", //Jaguar old
-        "d44bd19410a57f0cb2789e6095630f0e3edb6c5f", //LR old
-    ];
-
-    $url_of_all_cars = $url_of_the_core . $list_keys[0] . $locale_url_parameter;
-    create_cars_all($url_of_all_cars);
-
-    $url_of_all_cars = $url_of_the_core . $list_keys[1] . $locale_url_parameter;
-    create_cars_all($url_of_all_cars);
-
-    $url_of_all_cars = $url_of_the_core . $list_keys[2] . $locale_url_parameter;
-    create_cars_all($url_of_all_cars);
-
-    $url_of_all_cars = $url_of_the_core . $list_keys[3] . $locale_url_parameter;
-    create_cars_all($url_of_all_cars);
-
-    //at the end delete the posts and show the count
-    $cnt = delete_the_posts(); 
-    echo "__post deleted: " . $cnt . "___";
-}
-
-
+//TODO: param post counts per page 
+//! paginations
 
 /**
- * Basic fundamental function, create only one car used for updating
- * @param string $links_of_individual
+ * Create all cars caler
  */
-function create_cars($links_of_individual = "", $link_of_thumb = "")
+function create_all_cars_caller()
 {
-    global $content01;
-    global $assoc_links_and_thumbs;
+    //JR cars
+    create_cars_all(API_URL_HOME . '' . UUID['JR'], UUID['JR']);
+    //LR cars
+    //create_cars_all(API_URL_HOME . '' . UUID['LR'], UUID['LR']);
 
-
-    //update only given link
-    //used from the GUI app
-    if ($links_of_individual) {
-        $url = $links_of_individual;
-        $content01 = get_content($url);
-        $content01 = json_decode($content01);
-        $id_new_post = create_new_car_posts($content01, $link_of_thumb, true);
-        echo "updating....";
-        return $id_new_post;
-    } else {
-    }
+    //at the end delete the posts and show the count
+    //$cnt = delete_the_posts();
+    //echo "__post deleted: " . $cnt . "___";
 }
 
 /**
  * Create all cars
  * @param string $link of all cars
  */
-function create_cars_all($url_of_all_cars = "")
+function create_cars_all($url_of_all_cars, $uuid)
 {
     global $content01;
-    global $assoc_links_and_thumbs;
-    global $global_link;
-
-    $locale_url_parameter = "?locale=sk";
-    //TODO: testing
-    //$url_of_all_cars = 'https://api.jsonbin.io/b/600fb184d4d77374a3f4de01/7';
-    $html = get_content($url_of_all_cars);
-
-    //initialization url + thumbs + is new?
-    get_links_of_cars_and_thumbs($html);
-
-    foreach (array_keys($assoc_links_and_thumbs) as $link) {
-        $url = trim(strval($link));
-        $url = $url . $locale_url_parameter;
-
-        //echo $url;
-        //echo '<br>';
-
+    
+    $html     = get_content($url_of_all_cars);
+    $cars_ids = get_ids_of_cars($html);
+    
+    foreach ($cars_ids as $id) {
+        $url = API_URL_HOME . '' . $uuid . '/vehicle' . '' . $id;
         $content01 = get_content($url);
         $content01 = json_decode($content01);
         //print_r( $content01);
-        $global_link = $url;
         create_new_car_posts($content01, $url);
+        die('one car');
     }
 }
 
@@ -121,20 +60,23 @@ function create_cars_all($url_of_all_cars = "")
 function create_new_car_posts($content01, $link, $single = "")
 {
     require_once(ABSPATH . 'wp-admin/includes/post.php');
+
+    //create post and save it to array so we know what to delete
     global $all_ids;
-    global $assoc_links_and_thumbs;
-
     $url = $link;
-    $url = trim($url);
-    $url = str_replace('\n', '', $url);
-
-    $post_title = $content01->make . " " . $content01->model . " " . $content01->version . " " . $content01->id;
-
+    $attr = $content01->data->attributes;
+    $post_title = $attr->nameplate_brand_name . " " . $attr->nameplate_name .
+        " " . $attr->version . " " . $attr->drivetrain . " " . $content01->data->id;
     array_push($all_ids, $post_title);
 
-    if (post_exists($post_title)) {
+    $cover_photo_url = $attr->cover_photo;
 
+
+    if (post_exists($post_title)) {
+        echo $title;
+        //TODO: update the thumbnail
         // send to browser
+        /*
         echo " already exists: ";
         echo $post_title;
         echo "<br>";
@@ -151,85 +93,45 @@ function create_new_car_posts($content01, $link, $single = "")
         );
         //Update the post into the database - title
         wp_update_post($my_post);
-
-
         update_post_acf($post_id);
         update_vozidla_post_meta($post_id);
-
+        */
         return;
     } else {
-
-
         $post_information = array(
             'post_title' => $post_title,
             'post_type' => 'vozidla',
             'post_status' => 'publish',
             'post_author' => 'json_robot',
         );
-
         echo "__creating post__" . $url . "<br>";
-
 
         $postID = wp_insert_post($post_information); //here's the catch
         print_r("<br>" . $postID . "<br>");
-        ob_end_flush();
 
-        $url_thumb = str_replace('?locale=sk', '', $url);
-        upload_and_asign_thumbnail($postID, $assoc_links_and_thumbs[$url_thumb]);
+        //*thumb
+        upload_and_asign_thumbnail($postID, $cover_photo_url);
 
-
-        echo '<pre>';
-        print_r($url_thumb);
-        print_r($assoc_links_and_thumbs);
-        echo '</pre>';
+        /*
         if ($single) {
             echo 'je single';
             upload_and_asign_thumbnail($postID, $link);
             return $postID;
         }
+        */
     }
 }
 
-
 /**
- * GET ALL THE LINKS FROM THE MOTHER URL
- * @param $html_content
+ * Function to get array ids
  */
-function get_links_of_cars_and_thumbs($html_content)
+function get_ids_of_cars($html_content)
 {
-
-    global $is_new_car;
-    global $assoc_links_and_thumbs;
-
-    $html = $html_content;
-    $array_links = array();
-    $array_thumbs = array();
-    $jsonIterator = new RecursiveIteratorIterator(
-        new RecursiveArrayIterator(json_decode($html, TRUE)),
-        RecursiveIteratorIterator::SELF_FIRST
-    );
-    foreach ($jsonIterator as $key => $val) {
-        if ($key === "url") {
-            array_push($array_links, "$val");
-        } else if ($key === "cover_photo") {
-            array_push($array_thumbs, $val["large"]);
-        } else if ($key === "name") {
-            if (strpos($val, 'NEW')) {
-                $is_new_car = true;
-            } else {
-                $is_new_car = false;
-            }
-        }
+    $cars_ids = [];
+    foreach ($html_content->data as $data) {
+        array_push($cars_ids, $data->id);
     }
-    $links = $array_links;
-    $thumbs = $array_thumbs;
-
-    //if thumbs is not equal to links we throw an error
-    if (count($links) != count($thumbs)) {
-        die('Wrong thumbs upload!');
-    } else {
-        $assoc_links_and_thumbs = array_combine($links, $thumbs);
-    }
+    return $cars_ids;
 }
 
 
@@ -242,43 +144,19 @@ function update_vozidla_post_meta($post_id, $content01_param = "")
 {
     global $content01;
     $content_explode = $content01;
-
-    global $is_new_car;
-    if ($content01_param) {
-        $content_explode = $content01_param;
-        $is_new_car = 0;
-    }
-
-    /*
-     * TAXONOMY FIELDS VARIABLES
-     *
-    Značky vozidla => make
-    Modely => model
-    Palivá => fuel_type
-    Prevodovky => gearbox_type
-    Karosérie =>        *THIS IS NOT IN JSON
-    Motory =>           *THIS IS NOT IN JSON
-    Farby => color
-    Farby interiéru =>  *THIS IS NOT IN JSON
-    Pohony =>           *THIS IS NOT IN JSON
-    Sklad => title
-    Ročníky => production_year
-    Certifikáty =>      *THIS IS NOT IN JSON
-    Predajcovia => description //TODO: this is somehow rip
-    Ilustračný obrázok => urls Array normal
-     */
+    $attr = $content_explode->data->attributes;
 
     $details = array(
-        "Značky vozidla" => $content_explode->make,
-        "Verzia" => $content_explode->version,
-        "Modely" => $content_explode->model,
-        "Palivá" => $content_explode->fuel_type,
-        "Prevodovky" => $content_explode->gearbox_type,
-        "Farby" => $content_explode->color,
-        "Sklad" => $content_explode->title,
-        "Ročníky" => $content_explode->production_year,
-        "Predajcovia" => "Všeobecný predajcovia",
-        "Ilustračný obrázok" => $content_explode->car_photos[0]->urls->normal,
+        "Značky vozidla" =>     $attr->nameplate_brand_name,
+        "Modely" =>             $attr->nameplate_name,
+        "Verzia" =>             $attr->drivetrain,
+        "Palivá" =>             $attr->engine_type,
+        "Prevodovky" =>         $attr->transmission,
+        "Motory" =>             $attr->engine_capacity_normalized . '' . $attr->engine_capacity_unit,
+        "Farby" =>              $attr->color_name,
+        "State" =>              $attr->state,
+        "Sklad" =>              $attr->status,
+        "Ročníky" =>            $attr->production_year,
     );
 
     //Remove all non printale characters
@@ -288,12 +166,14 @@ function update_vozidla_post_meta($post_id, $content01_param = "")
         return trim($value);
     }, $details);
 
+
     //Update the name need logic
     $brand = $details["Značky vozidla"];
     $brand = strtolower($brand);
     $brand == "jaguar" ?
         wp_set_object_terms($post_id, "Jaguar", 'znacka', true) :
         wp_set_object_terms($post_id, "Land Rover", 'znacka', true);
+
 
     //4WD/FWD
     if (strpos($details["Verzia"], "FWD")) {
@@ -302,7 +182,7 @@ function update_vozidla_post_meta($post_id, $content01_param = "")
     } else {
         wp_set_object_terms($post_id, "4wd", 'pohon');
     }
-
+    
     //Motor
     if (strpos($details["Verzia"], "V8")) {
         wp_set_object_terms($post_id, "V8", 'motor');
@@ -312,6 +192,28 @@ function update_vozidla_post_meta($post_id, $content01_param = "")
         wp_set_object_terms($post_id, "V6", 'motor');
     }
 
+    //Sklad 
+    if ($details["Sklad"] == 'delivery') {
+        //wp_set_object_terms($post_id, "Vo výrobe", 'sklad');
+        echo 'vyroba';
+    } else {
+        //wp_set_object_terms($post_id, "Na sklade", 'sklad');
+        echo 'skald';
+    }
+
+    //Nové/ jazdené
+    if ($details["State"] == "new") {
+        // echo 'setting the object';
+        //wp_set_object_terms($post_id, "vseobecne", 'predajcovia');
+        //wp_set_object_terms($post_id, "Nové vozidlá", 'znacka', true);
+        echo 'nove';
+    } else {
+        // echo 'setting the object';
+        //wp_set_object_terms($post_id, "jazdene", 'predajcovia');
+        //wp_set_object_terms($post_id, "Jazdené vozidlá", 'znacka', true);
+        echo 'jazdene';
+    }
+
     //Update the post meta
     wp_set_object_terms($post_id, $details["Modely"], 'model');
     wp_set_object_terms($post_id, $details["Palivá"], 'palivo');
@@ -319,23 +221,6 @@ function update_vozidla_post_meta($post_id, $content01_param = "")
     wp_set_object_terms($post_id, $details["Farby"], 'farba');
     wp_set_object_terms($post_id, $details["Ročníky"], 'rocnik');
     wp_set_object_terms($post_id, $details["Predajcovia"], 'predajcovia');
-
-
-    if (strpos(strtolower($details["Sklad"]), 'vyrob') || strpos(strtolower($details["Sklad"]), 'výrob')) {
-        wp_set_object_terms($post_id, "Vo výrobe", 'sklad');
-    } else {
-        wp_set_object_terms($post_id, "Na sklade", 'sklad');
-    }
-
-    if ($is_new_car) {
-        // echo 'setting the object';
-        wp_set_object_terms($post_id, "vseobecne", 'predajcovia');
-        wp_set_object_terms($post_id, "Nové vozidlá", 'znacka', true);
-    } else {
-        // echo 'setting the object';
-        wp_set_object_terms($post_id, "jazdene", 'predajcovia');
-        wp_set_object_terms($post_id, "Jazdené vozidlá", 'znacka', true);
-    }
 }
 
 
@@ -346,69 +231,38 @@ function update_vozidla_post_meta($post_id, $content01_param = "")
  */
 function update_post_acf($post_id, $content01_param = "", $link_param = "")
 {
-    //$post_id = global $postID;
-    /*
-     * ACF VARIABLES
-     * FOTKY
-     * kilometre
-     * certifikované vozidlo(check box)     --toto netreba
-     * certifikáty radio button             --toto netreba
-     * link na viac info                    -- special element nebudem riešiť so far
-     * kontakty na predajcov radio button   -nieje
-     * vykon
-     * vykon jednotka
-     * cenniková cena
-     * akutálna cena s DPH
-     * mesačny prenájom                     -toto nieje
-     * počet dverí                          -toto nieje
-     * počet sedadiel                       -toto nieje
-     * počet airbagov                       -toto nieje
-     * id ponuky
-     * vin
-     * objem
-     * spotreba                             -toto nieje
-     * základná výbava multi field
-     * doplnková výbava nulti field
-     * prehiedla- gallery
-     */
-
-    /*
-    * 1. get all fields besides the gallery field
-    * 2. put this to my wp and try to update the meta
-    * 3. try tu update acf and resolve the issues
-    * 4. finalize the gallery
-    */
     global $content01;
-    global $global_link;
-
     $content_explode = $content01;
-    $global_link_domestic = $global_link;
-
-    if ($content01_param) {
-        $content_explode = $content01_param;
-        $global_link_domestic = $link_param;
-        $content_explode = json_encode($content_explode);
-    }
+    $attr = $content_explode->data->attributes;
 
     $details = array(
-        "Popis" => $content_explode->title,
-        "Fotky" => $content_explode->car_photos,
-        "Kilometre" => $content_explode->mileage,
-        "Certifikované" => "",  //TODO: check this by default
-        "Certifikáty" => "",    //TODO: radio button
-        "Kontakt" => "",        //TODO: this requires even logic
-        "Vykon" => $content_explode->power,
-        "Vykon jednotka" => $content_explode->power_unit,
-        "Cennikova cena" => $content_explode->price,
-        "Aktualna cena" => $content_explode->sale_price,
-        "Id" => $content_explode->id,
-        "Vin" => $content_explode->vin,
-        "Objem" => $content_explode->capacity,
-        "Základná výbava" => $content_explode->standard_features,
-        "Príplatková výbava" => $content_explode->optional_features,
+        "Popis" =>                  $attr->short_description,
+        "Fotky" =>                  $attr->car_photos, //TODO: ups, treba získať
+        "Kilometre" =>              $attr->mileage,
+        "Kontakt" =>                "",
+        "Vykon" =>                  $attr->power,
+        "Vykon jednotka" =>         $attr->power_unit,
+        "Cennikova cena" =>         $attr->msrp_price,
+        "Aktualna cena" =>          $attr->sale_price,
+        "Id" =>                     $content_explode->data->id,
+        "Vin" =>                    $attr->vin,
+        "Objem" =>                  $attr->engine_capacity_normalized . "" . $attr->engine_capacity_unit,
+        "Základná výbava" =>        $attr->features_standard,
+        "Príplatková výbava" =>     $attr->features_optional,
+        "Thumbnail link" =>         $attr->cover_photo,
+        "Link" =>                   $content_explode->data->links->self,
     );
-
-
+    
+    update_field("popis", $details["Popis"], $post_id);
+    update_field("vykon", $details["Vykon"], $post_id);
+    update_field("vykon_jednotka", $details["Vykon jednotka"], $post_id);
+    update_field("cennikova_cena", $details["Cennikova cena"], $post_id);
+    update_field("aktualna_cena_s_dph", $details["Aktualna cena"], $post_id);
+    update_field("id_ponuky", $details["Id"], $post_id);
+    update_field("link_json", $details["Link"], $post_id);
+    update_field("vin", $details["Vin"], $post_id);
+    update_field("objem", $details["Objem"], $post_id);
+    update_field("thumb", $details["Thumbnail link"], $post_id);
 
     //update Kilometre field
     //If mileage is set to none, set value to 0
@@ -418,61 +272,34 @@ function update_post_acf($post_id, $content01_param = "", $link_param = "")
         $details["kilometre"] = 0;
         update_field("kilometre", 0, $post_id);
     }
-
-    //Update popis field
-    update_field("popis", $details["Popis"], $post_id);
-
-    //Update Výkon field
-    update_field("vykon", $details["Vykon"], $post_id);
-
-    //Update Výkon jednotak field
-    update_field("vykon_jednotka", $details["Vykon jednotka"], $post_id);
-
-    //Update Cenníková Cena
-    update_field("cennikova_cena", $details["Cennikova cena"], $post_id);
-
-    //Aktuálna cena s DPH
-    update_field("aktualna_cena_s_dph", $details["Aktualna cena"], $post_id);
-
-    //Update ID ponuky
-    update_field("id_ponuky", $details["Id"], $post_id);
-
-    //Update link ponuky
-    update_field("link_json", $global_link_domestic, $post_id);
-
-    //Update VIN field
-    update_field("vin", $details["Vin"], $post_id);
-
-    //Update Objem field
-    update_field("objem", $details["Objem"], $post_id);
-
+    
     //Update základná výbava
-    //Get the stripped text
-
-    $vybava = $details["Základná výbava"];
-    $vybava = trim($vybava);
-    $vybava = strip_tags($vybava);
-    $vybava = str_replace('•', ',', $vybava);
-    $vybava = ltrim($vybava, " ,");
+    $basic_features = [];
+    foreach ($details["Príplatková výbava"] as $single_array) {
+        $vybava = trim($single_array->label);
+        $vybava = strip_tags($vybava);
+        $vybava = str_replace('•', '', $vybava);
+        array_push($basic_features, $vybava);
+    }
     $vybava_nadpis = "Základná výbava";
-    //$addField = array("nadpis" => "nadpis", "basic_vybava_list" => "Spoiler tag");
     $addField = array("nadpis" => $vybava_nadpis);
     $addSubField = array(
-        'vybava' => $vybava,
+        'vybava' => implode(", ", $basic_features),
     );
     insert_field_subfield('basic_vybava', 'basic-vybava-list', $addField, $addSubField, 'field_5f9381c2ceac0', $post_id);
-
-
-    //Update extra výbava
-    //Get the stripped text
-    $vybava = $details["Príplatková výbava"];
-    $vybava = trim(strip_tags($vybava));
-    $vybava = explode("\n", $vybava);
-    $vybava = implode(", ", $vybava);
+    
+    //Update rozšírená výbava
+    $basic_features = [];
+    foreach ($details["Príplatková výbava"] as $single_array) {
+        $vybava = trim($single_array->label);
+        $vybava = strip_tags($vybava);
+        $vybava = str_replace('•', '', $vybava);
+        array_push($basic_features, $vybava);
+    }
     $vybava_nadpis = "Príplatková výbava";
     $addField = array("nadpis" => $vybava_nadpis);
     $addSubField = array(
-        'vybava' => $vybava,
+        'vybava' => implode(", ", $basic_features),
     );
     insert_field_subfield('extra_vybava', 'extra-vybava-list', $addField, $addSubField, 'field_5f938248ceac7', $post_id);
 }
@@ -486,15 +313,15 @@ function upload_and_asign_images($post_id, $content01_param = "")
 {
     global $content01;
     $content_explode = $content01;
-
+    
     $already_uploaded = [];
-
+    
     if ($content01_param) {
 
         $content_explode = $content01_param;
         $already_uploaded = explode('.',  get_field('obrazky_linky', $post_id));
     }
-
+    
     $photos = $content_explode->car_photos;
     $individual_photos = array();
     foreach ($photos as $photo) {
@@ -505,9 +332,9 @@ function upload_and_asign_images($post_id, $content01_param = "")
     $individual_photos = json_decode(json_encode($individual_photos), true);
 
     $final_array_photos = array();
-
+    
     foreach ($individual_photos as $photo) {
-
+        
         if (is_array($photo)) {
             array_push($final_array_photos, $photo["large"]);
         }
@@ -517,30 +344,30 @@ function upload_and_asign_images($post_id, $content01_param = "")
     require_once(ABSPATH . 'wp-admin/includes/media.php');
     require_once(ABSPATH . 'wp-admin/includes/file.php');
     require_once(ABSPATH . 'wp-admin/includes/image.php');
-
+    
     //TODO: testing
     // array_pop($final_array_photos);
     // array_pop($final_array_photos);
     // array_pop($final_array_photos);
     // array_pop($final_array_photos);
     // array_pop($final_array_photos);
-
+    
     $attachments_urls = array();
     $attachements_urls_acf = array();
     foreach ($final_array_photos as $photo) {
-
+        
         echo 'already uploaded: ';
         print_r($already_uploaded);
         echo '<br>';
-
+        
         $url = strval($photo);
         if (in_array($url, $already_uploaded)) {
             //TODO:
             //continue;
         }
-
+        
         $desc = " ";
-
+        
         array_push($attachements_urls_acf, $url);
 
         $att_id = media_sideload_image($url, $post_id, $desc, 'id');
@@ -576,12 +403,12 @@ function delete_the_posts()
 {
     global $all_ids;
     $cnt = 0;
-
+    
     $args = [
         'post_type' => 'vozidla',
         'posts_per_page' => -1,
     ];
-
+    
     $loop = new WP_Query($args);
     while ($loop->have_posts()) {
         $loop->the_post();
@@ -598,7 +425,29 @@ function delete_the_posts()
         }
     }
     wp_reset_query();
-
+    
     //return the number of deleted posts
     return $cnt;
+}
+/**
+ * Basic fundamental function, create only one car used for updating
+ * @param string $links_of_individual
+ */
+function create_cars($links_of_individual = "", $link_of_thumb = "")
+{
+    global $content01;
+    global $assoc_links_and_thumbs;
+
+
+    //update only given link
+    //used from the GUI app
+    if ($links_of_individual) {
+        $url = $links_of_individual;
+        $content01 = get_content($url);
+        $content01 = json_decode($content01);
+        $id_new_post = create_new_car_posts($content01, $link_of_thumb, true);
+        echo "updating....";
+        return $id_new_post;
+    } else {
+    }
 }

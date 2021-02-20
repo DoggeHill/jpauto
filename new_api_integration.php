@@ -88,10 +88,24 @@ echo '</pre>';
 //*
 
 
-
-
-
 $attr = $content_explode->data->attributes;
+
+//*photos
+//array of objects 
+$photos_array = Array();
+$attachment_wrapper_array = $content_explode->included;
+foreach($attachment_wrapper_array as $item){
+    if($item->type === "photo"){
+        array_push($photos_array, $item->attributes->image_path);
+    }
+}
+
+echo '<br>';
+print_r($photos_array);
+
+
+
+
 $details = array(
     "Popis" =>                  $attr->short_description,
     "Fotky" =>                  $attr->car_photos, //TODO: ups, treba získať
@@ -128,12 +142,15 @@ echo '</pre>';
 
 
 
+
+
 /**
  * Function to get array ids
  */
 function get_links_of_cars_and_thumbs($html_content)
 {
     global $array_ids;
+    //print_r($html_content->data);
     foreach ($html_content->data as $data) {
         array_push($array_ids, $data->id);
     }
