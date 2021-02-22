@@ -7,14 +7,31 @@
         <div class="col-xl-5 col-lg-5">
           <div class="row">
             <div class="car-price-info">
-              <h1><?php the_title() ?></h1>
-              <?php if (get_field('cennikova_cena')) : ?>
+              <h1>
+                <?php
+                $title = get_the_title();
+                $title = substr($title, 0, -5);
+                echo $title;
+                ?>
+              </h1>
+              <?php if (get_field('aktualna_cena_s_dph')) : ?>
                 <p class="catalog-price">Cenníková cena: <?php echo number_format(get_field('cennikova_cena'), 0, '.', ' ') ?> €</p>
               <?php endif; ?>
-              <p class="actual-price-with-DPH"><?php echo number_format(get_field('aktualna_cena_s_dph'), 0, '.', ' ') ?> € s DPH</p>
+              <p class="actual-price-with-DPH">
+                <?php
+
+                if (get_field('aktualna_cena_s_dph') != 0) {
+                  echo number_format(get_field('aktualna_cena_s_dph'), 0, '.', ' ');
+                } else {
+                  echo number_format(get_field('cennikova_cena'), 0, '.', ' ');
+                }
+                ?> € s DPH</p>
               <p class="actual-price-without-DPH">
                 <?php
                 $bezDPH = get_field('aktualna_cena_s_dph') * 0.83333;
+                if ($bezDPH == 0) {
+                  $bezDPH = get_field('cennikova_cena') * 0.83333;
+                }
                 echo number_format($bezDPH, 0, '.', ' ') ?>
                 € možný odpočet DPH
               </p>
@@ -32,28 +49,28 @@
 
 
 
-              <!--   <?php //if( have_rows('info_kontakt', 'option') ): 
+              <!--   <?php //if( have_rows('info_kontakt', 'option') ):
                       ?>
       <div class="single-car-contacts">
       <?php //while( have_rows('info_kontakt', 'option') ): the_row();
       ?>
           <div class="single-contact">
-            <h6><?php //the_sub_field('meno', 'option'); 
+            <h6><?php //the_sub_field('meno', 'option');
                 ?></h6>
-            <p><?php //the_sub_field('pozicia', 'option'); 
+            <p><?php //the_sub_field('pozicia', 'option');
                 ?></p>
             <hr>
-            <a href="tel:<?php //the_sub_field('telefonne_cislo', 'option'); 
-                          ?>" target="_blank"><?php //the_sub_field('telefonne_cislo', 'option'); 
+            <a href="tel:<?php //the_sub_field('telefonne_cislo', 'option');
+                          ?>" target="_blank"><?php //the_sub_field('telefonne_cislo', 'option');
                                               ?></a>
-            <a href="mailto:<?php //the_sub_field('e-mail', 'option'); 
-                            ?>" target="_blank"><?php //the_sub_field('e-mail', 'option'); 
+            <a href="mailto:<?php //the_sub_field('e-mail', 'option');
+                            ?>" target="_blank"><?php //the_sub_field('e-mail', 'option');
                                                 ?></a>
           </div>
-      <?php //endwhile; 
+      <?php //endwhile;
       ?>
       </div>
-  <?php //endif; 
+  <?php //endif;
   ?> -->
 
 
@@ -101,6 +118,7 @@
             <div class="image-wrapper">
               <div class="model_swiper">
                 <div class="swiper-wrapper">
+                  <?php /* ?>
                   <div class="swiper-slide">
                     <?php
                     $image = get_post_thumbnail_id();
@@ -110,13 +128,15 @@
                     }
                     ?>
                   </div>
-                  <?php $images = get_field('dalsie_fotky');
-                  $size = 'large';
-                  if ($images) :
-                    foreach ($images as $image_id) :
+                  <?php */ ?>
+                  <?php 
+                  $images = get_field('obrazky_linky');
+                  $images_array = explode(',', $images);
+                  if ($images_array) :
+                    foreach ($images_array as $image_link) :
                   ?>
                       <div class="swiper-slide">
-                        <?php echo wp_get_attachment_image($image_id, $size); ?>
+                          <img src="<?php echo $image_link ?>" alt="car" srcset="">
                       </div>
                   <?php endforeach;
                   endif; ?>
@@ -125,15 +145,15 @@
                 <div class="swiper-button-prev"></div>
                 <!--              <div class="model_swiper_box">-->
                 <!--                <div class="image">-->
-                <!--                  <img src="--><?php //echo get_template_directory_uri() 
+                <!--                  <img src="--><?php //echo get_template_directory_uri()
                                                     ?>
                 <!--/seduco-core/pictures/svg/gearshifticon.svg">-->
                 <!--                </div>-->
-                <!--                <div class="prev_button"><img src="--><?php //echo get_template_directory_uri() 
+                <!--                <div class="prev_button"><img src="--><?php //echo get_template_directory_uri()
                                                                           ?>
                 <!--/seduco-core/pictures/svg/up_white.svg"></div>-->
                 <!--                <div class="swiper-pagination"></div>-->
-                <!--                <div class="next_button"><img src="--><?php //echo get_template_directory_uri() 
+                <!--                <div class="next_button"><img src="--><?php //echo get_template_directory_uri()
                                                                           ?>
                 <!--/seduco-core/pictures/svg/down_white.svg"></div>-->
                 <!--              </div>-->
@@ -403,6 +423,7 @@
           $modelTerm = get_the_terms(get_the_ID(), 'model');
           $modelslug = $modelTerm[0]->slug;
           if (in_array($modelslug, array('defender', 'range-rover'))) {
+
             $modelArray = array('defender', 'range-rover');
           } elseif (in_array($modelslug, array('e-pace', 'xe', 'range-rover-evoque', 'discovery-sport'))) {
             $modelArray = array('e-pace', 'xe', 'range-rover-evoque', 'discovery-sport');
@@ -410,6 +431,12 @@
             $modelArray = array('f-pace', 'xf', 'range-rover-velar', 'i-pace');
           } elseif (in_array($modelslug, array('discovery', 'range-rover-sport'))) {
             $modelArray = array('discovery', 'range-rover-sport');
+          } else {
+            // get all terms in the taxonomy
+            $terms = get_terms('model');
+            // convert array of term objects to array of term IDs
+            $term_ids = wp_list_pluck($terms, 'slug');
+            $modelArray = $term_ids;
           }
           $args = array(
             'post_type' => 'vozidla',
@@ -435,7 +462,7 @@
                   <a href="<?php the_permalink(); ?>">
                     <?php
                     $image = get_post_thumbnail_id();
-                    $size = 'medium';
+                    $size = 'large';
                     if ($image) {
                       echo wp_get_attachment_image($image, $size, "", array("class" => ""));
                     }
