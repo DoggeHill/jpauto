@@ -230,14 +230,20 @@ function save_post_callback($post_id)
     if ($is_new) {
         // New post
         $post = get_post($post_id);
-        if ($post->post_type != 'vozidla') {
+        
+        var_dump($post);
+        //ensure the post is created by json robot
+        if ($post->post_type != 'vozidla' || $post->post_author != 4) {
             return;
         }
+
         //update post meta and custom taxonomies
         update_vozidla_post_meta($post_id);
 
         //update post acf
         update_post_acf($post_id);
+
+
 
         //upload images and save them in acf gallery
         //upload_and_asign_images($post_id);

@@ -1,4 +1,12 @@
 <?php
+/*
+    echo '<br>';
+    echo $details["Objem"];
+    echo '<br>';
+    echo '<br>';
+    echo '<br>';
+*/
+
 
 header('Content-type: text/html; charset=utf-8');
 require_once 'cars_json_functions_json.php';
@@ -40,6 +48,7 @@ function create_all_cars_caller()
     echo count($all_ids) . '  second ' . $all_ids_count;
     echo '<br>';
     if ($all_ids && count($all_ids) == $all_ids_count) {
+        //echo "woudl delete";
         $cnt = delete_the_posts();
     }
     echo "__post deleted: " . $cnt . "___";
@@ -110,7 +119,7 @@ function create_new_car_posts($content01, $link, $single = "")
             'post_title' => $post_title,
             'post_type' => 'vozidla',
             'post_status' => 'publish',
-            'post_author' => 'json_robot',
+            'post_author' => 4,
         );
         echo "__creating post__" . $url . "<br>";
 
@@ -380,7 +389,7 @@ function delete_the_posts()
 //
 //
 //
-//DEPRECATED FUNCTIONS
+//OLD FUNCTIONS
 //
 //
 //
@@ -392,8 +401,6 @@ function delete_the_posts()
 /**
  * Upload media and add it to the gallery
  * @param $post_id
- * @deprecated
- * 
  */
 function upload_and_asign_images($post_id, $content01_param = "")
 {
@@ -470,8 +477,7 @@ function upload_and_asign_images($post_id, $content01_param = "")
 
 /**
  *? Basic fundamental function, create only one car used for updating
- * @param string $links_of_individual
- * @deprecated
+ ** @param string $links_of_individual
  */
 function create_cars($links_of_individual = "", $link_of_thumb = "")
 {
