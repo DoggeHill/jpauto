@@ -15,7 +15,7 @@ require_once 'cars_json_functions_json.php';
 //content of the individual car
 $content01 = new stdClass();
 //Array of all titles created during the post being publish used for the deletion
-$all_ids = [];
+$all_ids_array = array();
 //All ids count
 $all_ids_count = 0;
 
@@ -34,24 +34,25 @@ const API_URL_NO_PAGINATION = '?items=100';
  */
 function create_all_cars_caller()
 {
+    global $all_ids_count;
+    
     //JR cars
     create_cars_all(API_URL_HOME . '' . UUID['JR'] . '' . API_URL_NO_PAGINATION, UUID['JR']);
     //LR cars
     create_cars_all(API_URL_HOME . '' . UUID['LR'] . '' . API_URL_NO_PAGINATION, UUID['LR']);
-
+    
     //at the end delete the posts and show the count
     //check if all ids is empty if so we have an errror and do not want to 
     //delete anything
-    global $all_ids;
-    global $all_ids_count;
+    global $all_ids_array;
     echo '<br>';
-    echo count($all_ids) . '  second ' . $all_ids_count;
+    echo count($all_ids_array) . '  second ' . $all_ids_count;
+    //var_dump($all_ids_array);
     echo '<br>';
-    if ($all_ids && count($all_ids) == $all_ids_count) {
-        //echo "woudl delete";
+    if ($all_ids_array) {
         $cnt = delete_the_posts();
     }
-    echo "__post deleted: " . $cnt . "___";
+    echo "__post deleted: " . $cnt  . "___";
 }
 
 /**
@@ -69,8 +70,7 @@ function create_cars_all($url_of_all_cars, $uuid)
         $url = API_URL_HOME . '' . $uuid . '/vehicle/' . '' . $id;
         $content01 = get_content($url);
         $content01 = json_decode($content01);
-        create_new_car_posts($content01, $url);
-       
+        create_new_car_posts($content01, $url, "");
     }
 }
 
@@ -80,17 +80,18 @@ function create_cars_all($url_of_all_cars, $uuid)
  */
 function create_new_car_posts($content01, $link, $single = "")
 {
+    global  $all_ids_array;
     require_once(ABSPATH . 'wp-admin/includes/post.php');
     //create post and save it to array so we know what to delete
-    global $all_ids;
+    
     $url = $link;
     //! nadpis 
     $attr = $content01->data->attributes;
     $post_title = $attr->nameplate_brand_name . " " . $attr->nameplate_name .
         " " . $attr->version . " " . $attr->drivetrain . " " . $content01->data->id;
-    array_push($all_ids, $post_title);
-
-
+    
+    $all_ids_array[] = $post_title;
+    
     $cover_photo_url = API_URL_PICS . '' . $attr->cover_photo;
     
     if (post_exists($post_title)) {
@@ -106,6 +107,7 @@ function create_new_car_posts($content01, $link, $single = "")
             $my_post = array(
                 'ID' => $post_id,
                 'post_title' => $post_title,
+                'post_author' => 3,
             );
             wp_update_post($my_post);
             if (get_field('thumb', $post_id) != $attr->cover_photo) {
@@ -119,7 +121,7 @@ function create_new_car_posts($content01, $link, $single = "")
             'post_title' => $post_title,
             'post_type' => 'vozidla',
             'post_status' => 'publish',
-            'post_author' => 4,
+            'post_author' => 3,
         );
         echo "__creating post__" . $url . "<br>";
 
@@ -353,9 +355,8 @@ function upload_and_asign_thumbnail($post_id, $photo)
  */
 function delete_the_posts()
 {
-    global $all_ids;
+    global $all_ids_array;
     $cnt = 0;
-
     $args = [
         'post_type' => 'vozidla',
         'posts_per_page' => -1,
@@ -365,7 +366,7 @@ function delete_the_posts()
     while ($loop->have_posts()) {
         $loop->the_post();
         //echo the_title() . 'deleteing...';
-        if (!in_array(get_the_title(), $all_ids)) {
+        if (!in_array(get_the_title(), $all_ids_array)) {
             echo '<br>';
             echo 'deleting...';
             the_title();
