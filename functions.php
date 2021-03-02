@@ -231,9 +231,8 @@ function save_post_callback($post_id)
         // New post
         $post = get_post($post_id);
         
-        var_dump($post);
         //ensure the post is created by json robot
-        if ($post->post_type != 'vozidla' || $post->post_author != 4) {
+        if ($post->post_type != 'vozidla' || $post->post_author != 3) {
             return;
         }
 
@@ -242,8 +241,6 @@ function save_post_callback($post_id)
 
         //update post acf
         update_post_acf($post_id);
-
-
 
         //upload images and save them in acf gallery
         //upload_and_asign_images($post_id);

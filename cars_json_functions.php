@@ -338,12 +338,12 @@ function upload_and_asign_thumbnail($post_id, $photo)
     require_once(ABSPATH . 'wp-admin/includes/file.php');
     require_once(ABSPATH . 'wp-admin/includes/image.php');
     $url = strval($photo);
-    echo '<br>';
-    echo $url;
+    //echo '<br>';
+    //echo $url;
     $desc = " ";
     $att_id = media_sideload_image($url, $post_id, $desc, 'id');
     set_post_thumbnail($post_id, $att_id);
-    echo 'finished';
+    //echo 'finished';
 }
 
 
@@ -450,9 +450,9 @@ function upload_and_asign_images($post_id, $content01_param = "")
     $attachements_urls_acf = array();
     foreach ($final_array_photos as $photo) {
 
-        echo 'already uploaded: ';
-        print_r($already_uploaded);
-        echo '<br>';
+        //echo 'already uploaded: ';
+        //print_r($already_uploaded);
+        //echo '<br>';
 
         $url = strval($photo);
         if (in_array($url, $already_uploaded)) {
@@ -468,7 +468,7 @@ function upload_and_asign_images($post_id, $content01_param = "")
         array_push($attachments_urls, $att_id);
     }
     $attachements_urls_acf = implode(" ", $attachements_urls_acf);
-    print_r($attachements_urls_acf);
+    //print_r($attachements_urls_acf);
     update_field('obrazky_linky', $attachements_urls_acf, $post_id);
     update_field('dalsie_fotky', $attachments_urls, $post_id);
 }

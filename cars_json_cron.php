@@ -1,6 +1,6 @@
 <?php
 /*
-Template Name: json test
+Template Name: json cron
 */
 require_once 'cars_json_functions.php';
 
