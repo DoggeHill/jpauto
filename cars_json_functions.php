@@ -21,38 +21,38 @@ $all_ids_count = 0;
 
 //*constants
 const UUID = [
-    'JR' => 'a83f93f4-71e3-4e42-a2ec-88582f3e8e48',
-    'LR' => '13b297ed-eb96-4d1a-b0af-8539d7ff00ae',
+    'ALL' => 'ae7ba610-46c0-4c58-a306-323c632313a2',
 ];
 const API_URL_HOME = 'https://api.carsinventory.com/public_api/listing/';
 const API_URL_PICS = 'https://api.carsinventory.com/';
-const API_URL_NO_PAGINATION = '?items=100';
+const API_URL_NO_PAGINATION = '?items=50';
 
 
 /**
- * Create all cars caler
+ * Create all cars caller
  */
 function create_all_cars_caller()
 {
     global $all_ids_count;
     
     //JR cars
-    create_cars_all(API_URL_HOME . '' . UUID['JR'] . '' . API_URL_NO_PAGINATION, UUID['JR']);
+    create_cars_all(API_URL_HOME . '' . UUID['ALL'] . '' . API_URL_NO_PAGINATION, UUID['ALL']);
+    
     //LR cars
-    create_cars_all(API_URL_HOME . '' . UUID['LR'] . '' . API_URL_NO_PAGINATION, UUID['LR']);
+    //create_cars_all(API_URL_HOME . '' . UUID['LR'] . '' . API_URL_NO_PAGINATION, UUID['LR']);
     
     //at the end delete the posts and show the count
     //check if all ids is empty if so we have an errror and do not want to 
     //delete anything
     global $all_ids_array;
-    echo '<br>';
-    echo count($all_ids_array) . '  second ' . $all_ids_count;
+   
+    echo '   Vozidiel na stránke: ' . count($all_ids_array) . '.     Vozidiel v API: ' . $all_ids_count . '.   ';
     //var_dump($all_ids_array);
-    echo '<br>';
+   
     if ($all_ids_array) {
         $cnt = delete_the_posts();
     }
-    echo "__post deleted: " . $cnt  . "___";
+    echo "    Vymazaných vozidiel: " . $cnt  . " ";
 }
 
 /**
@@ -64,13 +64,24 @@ function create_cars_all($url_of_all_cars, $uuid)
     global $content01;
     $html     = get_content($url_of_all_cars);
     $html     = json_decode($html);
-    $cars_ids = get_ids_of_cars($html);
+    
+    $pages     = $html->meta->pagination->pages;
+    $all_items = $html->meta->pagination->count;
+    //echo '    Stránok v API: ' . $pages . '.    Vozidiel v API(meta): ' . $all_items . '.  ';
 
-    foreach ($cars_ids as $id) {
-        $url = API_URL_HOME . '' . $uuid . '/vehicle/' . '' . $id;
-        $content01 = get_content($url);
-        $content01 = json_decode($content01);
-        create_new_car_posts($content01, $url, "");
+    for ($i=1; $i <= $pages; $i++) { 
+        //skip the first one since it is fetched already
+        if($i > 1){
+            $html     = get_content($url_of_all_cars . "&page=" . $i);
+            $html     = json_decode($html);
+        }
+        $cars_ids = get_ids_of_cars($html);
+        foreach ($cars_ids as $id) {
+            $url = API_URL_HOME . '' . $uuid . '/vehicle/' . '' . $id;
+            $content01 = get_content($url);
+            $content01 = json_decode($content01);
+            create_new_car_posts($content01, $url, "");
+        }
     }
 }
 
@@ -123,10 +134,10 @@ function create_new_car_posts($content01, $link, $single = "")
             'post_status' => 'publish',
             'post_author' => 3,
         );
-        echo "__creating post__" . $url . "<br>";
+        echo " Nové vozidlo nájdené: " . $attr->nameplate_name . " ";
 
         $postID = wp_insert_post($post_information); //here's the catch
-        print_r("<br>" . $postID . "<br>");
+        //print_r("<br>" . $postID . "<br>");
         //*thumb
         upload_and_asign_thumbnail($postID, $cover_photo_url);
     }
@@ -367,14 +378,9 @@ function delete_the_posts()
         $loop->the_post();
         //echo the_title() . 'deleteing...';
         if (!in_array(get_the_title(), $all_ids_array)) {
-            echo '<br>';
-            echo 'deleting...';
-            the_title();
-            echo '<br>';
+            echo '   vymazané ' . the_title() . '.   ';
             wp_delete_post(get_the_id(), true);
             $cnt += 1;
-            echo '<br>';
-            echo 'deleted...';
         }
     }
     wp_reset_query();
@@ -493,7 +499,6 @@ function create_cars($links_of_individual = "", $link_of_thumb = "")
         $content01 = get_content($url);
         $content01 = json_decode($content01);
         $id_new_post = create_new_car_posts($content01, $link_of_thumb, true);
-        echo "updating....";
         return $id_new_post;
     } else {
     }

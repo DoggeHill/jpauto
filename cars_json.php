@@ -24,6 +24,9 @@ get_header(); ?>
                     <div></div>
                     <div></div>
                 </div>
+                <div>
+                <p class="text-center" id="status_json"></p>
+                </div>
             </div>
         </div>
     </div>

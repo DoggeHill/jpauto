@@ -63,46 +63,45 @@ function seduco_scripts()
     // STYLES
     wp_enqueue_style('bootstrap', get_template_directory_uri() . '/seduco-core/vendor/bootstrap/css/bootstrap.min.css');
     wp_enqueue_style('timepickerCSS', get_template_directory_uri() . '/seduco-core/vendor/timepicker/jquery.timepicker.min.css');
-    //    wp_enqueue_style( 'sweetalert', get_template_directory_uri() . '/seduco-core/vendor/swall/sweetalert.css' );
+//    wp_enqueue_style( 'sweetalert', get_template_directory_uri() . '/seduco-core/vendor/swall/sweetalert.css' );
     wp_enqueue_style('swiperCSS', get_template_directory_uri() . '/seduco-core/vendor/swiper/swiper-bundle.min.css');
-    //	wp_enqueue_style( 'lightcase', get_template_directory_uri() . '/seduco-core/vendor/lightcase/src/css/lightcase.css' );
-    //	wp_enqueue_style( 'owlcarousel', get_template_directory_uri() . '/seduco-core/vendor/owlcarousel/css/owl.carousel.min.css' );
-    //	wp_enqueue_style( 'slick', get_template_directory_uri() . '/seduco-core/vendor/slick/slick.css' );
-    //	wp_enqueue_style( 'iconfont', get_template_directory_uri() . '/seduco-core/css/iconstyle.css' );
+//	wp_enqueue_style( 'lightcase', get_template_directory_uri() . '/seduco-core/vendor/lightcase/src/css/lightcase.css' );
+//	wp_enqueue_style( 'owlcarousel', get_template_directory_uri() . '/seduco-core/vendor/owlcarousel/css/owl.carousel.min.css' );
+//	wp_enqueue_style( 'slick', get_template_directory_uri() . '/seduco-core/vendor/slick/slick.css' );
+//	wp_enqueue_style( 'iconfont', get_template_directory_uri() . '/seduco-core/css/iconstyle.css' );
     wp_enqueue_style('seduco', get_template_directory_uri() . '/seduco-core/css/seduco.css');
-    //	wp_enqueue_style( 'SEDUCO_TEMP_CSS', get_template_directory_uri() . '/seduco-core/css/seduco-temp.css' );
+//	wp_enqueue_style( 'SEDUCO_TEMP_CSS', get_template_directory_uri() . '/seduco-core/css/seduco-temp.css' );
 
     // FONTS
-    //	wp_enqueue_style( 'MAINFONT', '//fonts.googleapis.com/css?family=Muli:400,800&display=swap&subset=latin-ext' );
+//	wp_enqueue_style( 'MAINFONT', '//fonts.googleapis.com/css?family=Muli:400,800&display=swap&subset=latin-ext' );
     wp_enqueue_style('Roboto', '//fonts.googleapis.com/css?family=Montserrat:300,400,500,600,700,800,900&display=swap');
 
     // SCRIPTS
     wp_enqueue_script('jquery');
     wp_enqueue_script('bootstrap', get_template_directory_uri() . '/seduco-core/vendor/bootstrap/js/bootstrap.min.js', array('jquery'), '2019', true);
     wp_enqueue_script('timepickerJS', get_template_directory_uri() . '/seduco-core/vendor/timepicker/jquery.timepicker.min.js', array('jquery'), '2019', true);
-    //    wp_enqueue_script( 'popper', get_template_directory_uri() . '/seduco-core/vendor/bootstrap/js/popper.min.js', array('jquery'), '2019', true );
-    //    wp_enqueue_script( 'owlcarousel', get_template_directory_uri() . '/seduco-core/vendor/slick/slick.min.js', array('jquery'), '2019', true );
+//    wp_enqueue_script( 'popper', get_template_directory_uri() . '/seduco-core/vendor/bootstrap/js/popper.min.js', array('jquery'), '2019', true );
+//    wp_enqueue_script( 'owlcarousel', get_template_directory_uri() . '/seduco-core/vendor/slick/slick.min.js', array('jquery'), '2019', true );
     wp_enqueue_script('swiperJS', get_template_directory_uri() . '/seduco-core/vendor/swiper/swiper-bundle.min.js', array('jquery'), '2019', true);
-    //    wp_enqueue_script( 'waypoint', get_template_directory_uri() . '/seduco-core/vendor/waypoints/lib/jquery.waypoints.min.js', array('jquery'), '2019', true );
-    //    wp_enqueue_script( 'owlcarousel', get_template_directory_uri() . '/seduco-core/vendor/owlcarousel/js/owl.carousel.min.js', array('jquery'), '2019', true );
-    //    wp_enqueue_script( 'SWALL_JS', get_template_directory_uri() . '/seduco-core/vendor/swall/sweetalert.js', array(), '201904', true );
-    //	  wp_enqueue_script( 'LC_JS', get_template_directory_uri() . '/seduco-core/vendor/lightcase/src/js/lightcase.js', array(), '201904', true );
-    //    wp_enqueue_script( 'LM_JS', get_template_directory_uri() . '/seduco-core/vendor/readmore/readmore.min.js', array(), '201904', true );
+//    wp_enqueue_script( 'waypoint', get_template_directory_uri() . '/seduco-core/vendor/waypoints/lib/jquery.waypoints.min.js', array('jquery'), '2019', true );
+//    wp_enqueue_script( 'owlcarousel', get_template_directory_uri() . '/seduco-core/vendor/owlcarousel/js/owl.carousel.min.js', array('jquery'), '2019', true );
+//    wp_enqueue_script( 'SWALL_JS', get_template_directory_uri() . '/seduco-core/vendor/swall/sweetalert.js', array(), '201904', true );
+//	  wp_enqueue_script( 'LC_JS', get_template_directory_uri() . '/seduco-core/vendor/lightcase/src/js/lightcase.js', array(), '201904', true );
+//    wp_enqueue_script( 'LM_JS', get_template_directory_uri() . '/seduco-core/vendor/readmore/readmore.min.js', array(), '201904', true );
     wp_enqueue_script('SEDUCO_JS', get_template_directory_uri() . '/seduco-core/js/seduco.js', array(), '2019', true);
 
     // Chatbot nettle
-    //    wp_enqueue_style( 'nettle-chatbot', get_stylesheet_directory_uri() . '/inc/nettle/bundle.css', array(), '1.0' );
-    //    wp_enqueue_script( 'nettle-chatbot', get_stylesheet_directory_uri() . '/inc/nettle/bundle.js', array(), '1.0', false );
+//    wp_enqueue_style( 'nettle-chatbot', get_stylesheet_directory_uri() . '/inc/nettle/bundle.css', array(), '1.0' );
+//    wp_enqueue_script( 'nettle-chatbot', get_stylesheet_directory_uri() . '/inc/nettle/bundle.js', array(), '1.0', false );
 }
 
 /**
  * Custom modification of script tag
  */
-add_filter('script_loader_tag', 'add_script_attributes', 10, 3);
-function add_script_attributes($tag, $handle)
-{
-    if ($handle === 'nettle-chatbot') {
-        $tag = str_replace('text/javascript', 'module', $tag);
+add_filter( 'script_loader_tag', 'add_script_attributes', 10, 3 );
+function add_script_attributes($tag, $handle) {
+    if( $handle === 'nettle-chatbot' ) {
+        $tag = str_replace( 'text/javascript', 'module', $tag );
     }
     return $tag;
 }
@@ -137,11 +136,11 @@ require get_template_directory() . '/inc/googlemap.php';
 function testajax()
 {
     check_ajax_referer('seduco', 'security');
-?>
+    ?>
 
 
     <h2>afdasas</h2>
-<?php
+    <?php
     print_r("GGG");
 
     echo "hah";
@@ -242,6 +241,8 @@ function save_post_callback($post_id)
         //update post acf
         update_post_acf($post_id);
 
+
+
         //upload images and save them in acf gallery
         //upload_and_asign_images($post_id);
     } 
@@ -252,63 +253,44 @@ function save_post_callback($post_id)
  */
 function jpauto_tracking_scripts()
 {
-?>
+    ?>
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-164688780-1"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
-
-        function gtag() {
-            dataLayer.push(arguments);
-        }
+        function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
         gtag('config', 'UA-164688780-1');
     </script>
 
     <!-- Hotjar Tracking Code for https://www.jpauto.sk -->
     <script>
-        (function(h, o, t, j, a, r) {
-            h.hj = h.hj || function() {
-                (h.hj.q = h.hj.q || []).push(arguments)
-            };
-            h._hjSettings = {
-                hjid: 1785712,
-                hjsv: 6
-            };
-            a = o.getElementsByTagName('head')[0];
-            r = o.createElement('script');
-            r.async = 1;
-            r.src = t + h._hjSettings.hjid + j + h._hjSettings.hjsv;
+        (function(h,o,t,j,a,r){
+            h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+            h._hjSettings={hjid:1785712,hjsv:6};
+            a=o.getElementsByTagName('head')[0];
+            r=o.createElement('script');r.async=1;
+            r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
             a.appendChild(r);
-        })(window, document, 'https://static.hotjar.com/c/hotjar-', '.js?sv=');
+        })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
     </script>
 
     <!-- Facebook Pixel Code -->
     <script>
-        ! function(f, b, e, v, n, t, s) {
-            if (f.fbq) return;
-            n = f.fbq = function() {
-                n.callMethod ?
-                    n.callMethod.apply(n, arguments) : n.queue.push(arguments)
-            };
-            if (!f._fbq) f._fbq = n;
-            n.push = n;
-            n.loaded = !0;
-            n.version = '2.0';
-            n.queue = [];
-            t = b.createElement(e);
-            t.async = !0;
-            t.src = v;
-            s = b.getElementsByTagName(e)[0];
-            s.parentNode.insertBefore(t, s)
-        }(window, document, 'script',
+        !function(f,b,e,v,n,t,s)
+        {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+            if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+            n.queue=[];t=b.createElement(e);t.async=!0;
+            t.src=v;s=b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t,s)}(window, document,'script',
             'https://connect.facebook.net/en_US/fbevents.js');
         fbq('init', '1284905151695225');
         fbq('track', 'PageView');
     </script>
-    <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1284905151695225&ev=PageView&noscript=1" /></noscript>
+    <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1284905151695225&ev=PageView&noscript=1"/></noscript>
     <!-- End Facebook Pixel Code -->
-<?php
+    <?php
 }
 
 if (!defined('WP_DEBUG') || !WP_DEBUG) {
@@ -316,11 +298,6 @@ if (!defined('WP_DEBUG') || !WP_DEBUG) {
 }
 
 
-?>
-
-
-
-<?php
 /**
  * WP AJAX Call Frontend
  */
@@ -363,10 +340,11 @@ function ajax_cars_updater()
                         updateButton.removeClass("not-allowed")
                         updateButton.text("aktualizované");
                         // This outputs the result of the ajax request (The Callback)
+                        $("#status_json").text(data + " done");
                         console.log(data);
                     },
                     error: function(errorThrown) {
-                        window.alert(errorThrown);
+                        window.alert('Chyba, skúste znovu');
                         console.log(errorThrown);
                     },
                 });
@@ -382,9 +360,7 @@ function jpauto_update_cars_json()
     // The $_REQUEST contains all the data sent via AJAX from the Javascript call
     if (isset($_REQUEST)) {
         $data = $_REQUEST['data'];
-        // This bit is going to process our fruit variable into an Apple
         if ($data == 'update') {
-            $data = 'updated';
             require_once 'cars_json_functions.php';
             create_all_cars_caller();
         }
@@ -397,4 +373,3 @@ function jpauto_update_cars_json()
 // This bit is a special action hook that works with the WordPress AJAX functionality.
 add_action('wp_ajax_jpauto_update_cars_json', 'jpauto_update_cars_json');
 add_action('wp_ajax_nopriv_jpauto_update_cars_json', 'jpauto_update_cars_json');
-
